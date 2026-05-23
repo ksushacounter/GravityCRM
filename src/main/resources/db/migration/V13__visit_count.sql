@@ -1,0 +1,13 @@
+--
+---- 1. Добавляем колонку visit_count.
+---- Ставим DEFAULT 0, чтобы у старых записей не было значения NULL
+--ALTER TABLE subscriptions
+--ADD COLUMN visit_count INT NOT NULL DEFAULT 0;
+--
+--
+---- 2. (Опционально) Если в базе уже есть купленные абонементы,
+---- подтягиваем в них дефолтное количество занятий из их типов абонементов
+--UPDATE subscriptions s
+--SET visit_count = st.visit_count
+--FROM sub_types st
+--WHERE s.type_id = st.type_id;

@@ -1,0 +1,6 @@
+CREATE TABLE admin (
+    id SERIAL PRIMARY KEY,
+    fio VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) UNIQUE NOT NULL,
+    access_level VARCHAR(30) NOT NULL -- например, 'SUPER_ADMIN', 'MANAGER'
+);

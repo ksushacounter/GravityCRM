@@ -1,0 +1,6 @@
+CREATE TABLE students (
+    student_id SERIAL PRIMARY KEY,
+    fio VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) UNIQUE NOT NULL,
+    status VARCHAR(20) CHECK (status IN ('ACTIVE', 'DEBTOR')) DEFAULT 'ACTIVE'
+);
