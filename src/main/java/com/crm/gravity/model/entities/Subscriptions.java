@@ -9,6 +9,7 @@ public record Subscriptions(
         Long typeId,
         LocalDate purchaseDate,
         LocalDate endDate,
-        SubscriptionStatus status
+        SubscriptionStatus status,
+        Integer visitCount
 ) {
 }

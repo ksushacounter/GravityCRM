@@ -10,6 +10,7 @@ import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 public interface SubscriptionRepository {
@@ -18,8 +19,12 @@ public interface SubscriptionRepository {
     @RegisterConstructorMapper(SubTypes.class)
     SubTypes findTypeById(@Bind("typeId") Long typeId);
 
-    @SqlUpdate("INSERT INTO subscriptions (sub_number, student_id, type_id, end_date, status) " +
-            "VALUES (:subNumber, :studentId, :typeId, :endDate, :status)")
+    @SqlQuery("SELECT type_id, name, price, visit_count, sub_kind FROM sub_types ORDER BY type_id")
+    @RegisterConstructorMapper(SubTypes.class)
+    List<SubTypes> findAllTypes();
+
+    @SqlUpdate("INSERT INTO subscriptions (sub_number, student_id, type_id, end_date, status, visit_count) " +
+            "VALUES (:subNumber, :studentId, :typeId, :endDate, :status, :visitCount)")
     @GetGeneratedKeys("sub_id")
     Long createSubscription(@BindMethods Subscriptions subscription);
 
@@ -30,9 +35,13 @@ public interface SubscriptionRepository {
                        @Bind("subId") Long subId,
                        @Bind("status") String status);
 
-    @SqlQuery("SELECT sub_id, sub_number, student_id, type_id, end_date, status FROM subscriptions WHERE sub_id = :subId")
+    @SqlQuery("SELECT sub_id, sub_number, student_id, type_id, purchase_date, end_date, status, visit_count FROM subscriptions WHERE sub_id = :subId")
     @RegisterConstructorMapper(Subscriptions.class)
     Subscriptions findById(@Bind("subId") Long subId);
+
+    @SqlQuery("SELECT sub_id, sub_number, student_id, type_id, purchase_date, end_date, status, visit_count FROM subscriptions ORDER BY sub_id DESC")
+    @RegisterConstructorMapper(Subscriptions.class)
+    List<Subscriptions> findAll();
 
     @SqlUpdate("UPDATE subscriptions SET end_date = :endDate WHERE sub_id = :subId")
     void updateEndDate(@Bind("subId") Long subId, @Bind("endDate") LocalDate endDate);

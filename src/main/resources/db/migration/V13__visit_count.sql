@@ -1,4 +1,4 @@
---
+﻿--
 ---- 1. Добавляем колонку visit_count.
 ---- Ставим DEFAULT 0, чтобы у старых записей не было значения NULL
 --ALTER TABLE subscriptions

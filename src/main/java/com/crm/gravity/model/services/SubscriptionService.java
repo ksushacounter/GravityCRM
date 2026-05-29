@@ -38,7 +38,8 @@ public class SubscriptionService {
                 typeId,
                 null,
                 endDate,
-                SubscriptionStatus.ACTIVE
+                SubscriptionStatus.ACTIVE,
+                type.visitCount()
         );
         Long subId = subscriptionRepository.createSubscription(newSub);
 
@@ -52,3 +53,4 @@ public class SubscriptionService {
         return subId;
     }
 }
+

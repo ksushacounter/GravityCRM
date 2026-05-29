@@ -1,11 +1,11 @@
 package com.crm.gravity.model.entities;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 public record Payment(
         Long paymentId,
         int amount,
-        LocalTime paymentTime,
+        LocalDateTime paymentTime,
         String fiscalSign,
         Long adminId,
         Long subId,

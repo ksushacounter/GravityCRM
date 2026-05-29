@@ -14,12 +14,10 @@ public class JdbiConfig {
     @Bean
     public Jdbi jdbi(DataSource dataSource) {
         Jdbi jdbi = Jdbi.create(dataSource);
-        // Обязательно подключаем плагин для работы с интерфейсами (SqlObject)
         jdbi.installPlugin(new SqlObjectPlugin());
         return jdbi;
     }
 
-    // Регистрируем GroupRepository как Spring Bean
     @Bean
     public GroupRepository groupRepository(Jdbi jdbi) {
         return jdbi.onDemand(GroupRepository.class);
@@ -46,12 +44,22 @@ public class JdbiConfig {
     }
 
     @Bean
-    public HallRepository hallRepository(Jdbi jdbi) { return jdbi.onDemand(HallRepository.class); }
+    public HallRepository hallRepository(Jdbi jdbi) {
+        return jdbi.onDemand(HallRepository.class);
+    }
 
     @Bean
-    public ScheduleRepository sheduleRepository(Jdbi jdbi) { return jdbi.onDemand(ScheduleRepository.class); }
+    public ScheduleRepository scheduleRepository(Jdbi jdbi) {
+        return jdbi.onDemand(ScheduleRepository.class);
+    }
 
     @Bean
-    public SubscriptionFreezeRepository subscriptionFreezeRepository(Jdbi jdbi) { return jdbi.onDemand(SubscriptionFreezeRepository.class); }
+    public SubscriptionFreezeRepository subscriptionFreezeRepository(Jdbi jdbi) {
+        return jdbi.onDemand(SubscriptionFreezeRepository.class);
+    }
 
+    @Bean
+    public PaymentRepository paymentRepository(Jdbi jdbi) {
+        return jdbi.onDemand(PaymentRepository.class);
+    }
 }

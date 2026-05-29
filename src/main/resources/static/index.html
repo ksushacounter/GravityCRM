@@ -1,0 +1,960 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GravityCRM</title>
+  <style>
+    :root {
+      --milk: #fbf6ec;
+      --milk-2: #fffaf1;
+      --ink: #12100e;
+      --ink-2: #2b2622;
+      --muted: #766b62;
+      --line: #e4d8ca;
+      --orange: #e86f2b;
+      --orange-dark: #bd4d18;
+      --orange-soft: #fff0e4;
+      --brown: #5b392a;
+      --good: #2f7d4b;
+      --warn: #b46b16;
+      --bad: #b3261e;
+      --shadow: 0 18px 46px rgba(35, 24, 18, .10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(232, 111, 43, .16), transparent 26rem),
+        linear-gradient(135deg, var(--milk), #f5eadb 52%, #fffaf3);
+      color: var(--ink);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      padding: 24px 18px;
+      background: #12100e;
+      color: var(--milk);
+      border-right: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .brand {
+      padding: 16px 14px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    .logo {
+      display: grid;
+      gap: 5px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .logo-title {
+      position: relative;
+      width: max-content;
+      max-width: 100%;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+
+    .logo-title::before {
+      content: "";
+      position: absolute;
+      left: 42px;
+      right: 8px;
+      top: -10px;
+      height: 26px;
+      border-top: 1px solid rgba(255,255,255,.82);
+      border-radius: 55% 45% 0 0;
+      transform: rotate(-7deg);
+    }
+
+    .logo-title::after {
+      content: "*";
+      position: absolute;
+      left: 23px;
+      top: -2px;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+    }
+
+    .logo-subtitle {
+      padding-left: 45px;
+      color: rgba(255,255,255,.76);
+      font-size: 13px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 7px;
+      overflow: auto;
+    }
+
+    .nav button {
+      width: 100%;
+      min-height: 42px;
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 9px 11px;
+      background: transparent;
+      color: rgba(255,255,255,.72);
+      text-align: left;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      background: rgba(232, 111, 43, .17);
+      border-color: rgba(232, 111, 43, .42);
+      color: #fff;
+    }
+
+    .sidebar-foot {
+      margin-top: auto;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.66);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .main {
+      min-width: 0;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 22px;
+      padding: 18px 20px;
+      background: rgba(255, 250, 241, .82);
+      border: 1px solid rgba(228, 216, 202, .9);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .eyebrow {
+      margin: 0 0 5px;
+      color: var(--orange-dark);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { margin: 0; }
+    h1 { font-size: clamp(26px, 4vw, 46px); line-height: 1; }
+    h2 { font-size: 26px; }
+    h3 { font-size: 17px; }
+
+    .hint {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      padding: 8px 12px;
+      background: var(--milk-2);
+      color: var(--ink);
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn.primary {
+      border-color: var(--orange);
+      background: var(--orange);
+      color: #fff;
+    }
+
+    .btn.primary:hover { background: var(--orange-dark); }
+    .btn.danger { color: var(--bad); }
+    .btn.icon { width: 38px; padding: 0; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel, .metric {
+      background: rgba(255,250,241,.9);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel { padding: 16px; }
+    .panel h3 { margin-bottom: 14px; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+
+    .metric {
+      min-height: 128px;
+      padding: 17px;
+      display: grid;
+      align-content: space-between;
+      border-top: 4px solid var(--orange);
+    }
+
+    .metric .value {
+      margin-top: 14px;
+      font-size: 38px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    form {
+      display: grid;
+      gap: 11px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid #d8cabb;
+      border-radius: 8px;
+      padding: 9px 11px;
+      background: #fffdf8;
+      color: var(--ink);
+      outline: none;
+    }
+
+    textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(232, 111, 43, .14);
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .filters input,
+    .filters select {
+      width: min(100%, 260px);
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf8;
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid #eee2d5;
+      text-align: left;
+      vertical-align: top;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #18130f;
+      color: #fff7ee;
+      font-weight: 800;
+      z-index: 1;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: var(--orange-soft); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .ACTIVE, .COMPLETED { color: var(--good); background: #edf8f0; border-color: #bfe5cb; }
+    .FROZEN, .PENDING { color: var(--warn); background: #fff6df; border-color: #f2d28d; }
+    .EXPIRED, .DEBTOR { color: var(--bad); background: #fff0ee; border-color: #efb7b2; }
+
+    .toast {
+      min-height: 22px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .toast.ok { color: var(--good); }
+    .toast.err { color: var(--bad); }
+
+    .schedule-board {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(180px, 1fr));
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .day {
+      min-height: 180px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf8;
+      overflow: hidden;
+    }
+
+    .day-title {
+      padding: 10px 11px;
+      background: #18130f;
+      color: #fff7ee;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .lesson {
+      display: grid;
+      gap: 5px;
+      margin: 10px;
+      padding: 10px;
+      border-left: 4px solid var(--orange);
+      border-radius: 8px;
+      background: var(--orange-soft);
+      font-size: 13px;
+    }
+
+    .lesson strong { font-size: 14px; }
+    .lesson small { color: var(--muted); }
+
+    @media (max-width: 1180px) {
+      .span-3, .span-4 { grid-column: span 6; }
+      .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
+    }
+
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+      }
+      .nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .topbar, .section-head { align-items: stretch; flex-direction: column; }
+      .actions { justify-content: flex-start; }
+      .span-3, .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 12; }
+      .form-grid { grid-template-columns: 1fr; }
+      .main { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">
+        <a class="logo" href="#dashboard" aria-label="GravityCRM">
+          <span class="logo-title">Гравитация</span>
+          <span class="logo-subtitle">Танцевальная школа</span>
+        </a>
+      </div>
+      <nav class="nav" id="tabs"></nav>
+      <div class="sidebar-foot">
+        GravityCRM для администратора: ученики, группы, расписание, продажи, посещаемость и контроль оплат.
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Рабочее место администратора</p>
+          <h1>GravityCRM</h1>
+          <p class="hint">Операционная панель танцевальной школы с учетом ТЗ: расписание, абонементы, посещения и отчеты.</p>
+        </div>
+        <div class="actions">
+          <button class="btn" id="refreshBtn" type="button">Обновить</button>
+          <a class="btn primary" href="#subscriptions">Продать абонемент</a>
+        </div>
+      </header>
+
+      <section id="app"></section>
+    </main>
+  </div>
+
+  <script>
+    const api = "/crm";
+    const days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+    const state = {
+      students: [], choreographers: [], groups: [], halls: [], schedule: [],
+      subscriptionTypes: [], subscriptions: [], freezes: [], attendance: [], payments: []
+    };
+    const endpoints = {
+      students: "/get/students",
+      choreographers: "/get/choreographers",
+      groups: "/get/groups",
+      halls: "/get/halls",
+      schedule: "/get/schedule",
+      subscriptionTypes: "/get/subscription-types",
+      subscriptions: "/subscriptions",
+      freezes: "/get/subscription-freezes",
+      attendance: "/get/attendance",
+      payments: "/get/payments"
+    };
+    const pages = [
+      ["dashboard", "⌂", "Обзор"],
+      ["students", "+", "Ученики"],
+      ["groups", "□", "Группы"],
+      ["schedule", "◷", "Расписание"],
+      ["subscriptions", "₽", "Абонементы"],
+      ["attendance", "✓", "Посещения"],
+      ["staff", "◇", "Хореографы"],
+      ["payments", "≡", "Отчеты"],
+      ["imports", "⇧", "Импорт"]
+    ];
+
+    const $ = (id) => document.getElementById(id);
+    const safe = (value) => value === null || value === undefined || value === "" ? "—" : String(value);
+    const money = (value) => new Intl.NumberFormat("ru-RU").format(Number(value || 0)) + " ₽";
+    const byId = (items, key, id) => items.find((item) => String(item[key]) === String(id));
+    const studentName = (id) => byId(state.students, "studentId", id)?.fio || `Ученик #${id}`;
+    const groupName = (id) => byId(state.groups, "groupId", id)?.name || `Группа #${id}`;
+    const hallName = (id) => byId(state.halls, "id", id)?.name || `Зал #${id}`;
+    const choreographerName = (id) => byId(state.choreographers, "choreographerId", id)?.fio || `Хореограф #${id}`;
+    const typeName = (id) => byId(state.subscriptionTypes, "typeId", id)?.name || `Тип #${id}`;
+    const attendanceLessonName = (scheduleId) => {
+      if (!scheduleId) return "Занятие удалено";
+      const lesson = byId(state.schedule, "scheduleId", scheduleId);
+      return lesson ? groupName(lesson.groupId) : `Занятие #${scheduleId} удалено`;
+    };
+    const statusBadge = (value) => `<span class="badge ${safe(value)}">${safe(value)}</span>`;
+    const optionList = (items, idKey, labelFn) => items.map((item) => `<option value="${item[idKey]}">${labelFn(item)}</option>`).join("");
+    const formValue = (form, name) => new FormData(form).get(name);
+
+    function currentPage() {
+      return location.hash.replace("#", "") || "dashboard";
+    }
+
+    function renderTabs() {
+      $("tabs").innerHTML = pages.map(([id, icon, title]) => `
+        <button class="${currentPage() === id ? "active" : ""}" data-page="${id}" type="button">
+          <span>${icon}</span><span>${title}</span>
+        </button>
+      `).join("");
+      document.querySelectorAll("[data-page]").forEach((button) => {
+        button.addEventListener("click", () => {
+          location.hash = button.dataset.page;
+          render(button.dataset.page);
+        });
+      });
+    }
+
+    async function request(path, options = {}) {
+      const response = await fetch(api + path, options);
+      const text = await response.text();
+      if (!response.ok) throw new Error(text || `HTTP ${response.status}`);
+      try { return JSON.parse(text); } catch { return text; }
+    }
+
+    async function loadAll() {
+      await Promise.all(Object.entries(endpoints).map(async ([key, path]) => {
+        try {
+          state[key] = await request(path);
+        } catch (error) {
+          state[key] = [];
+          console.warn(`Не удалось загрузить ${key}`, error);
+        }
+      }));
+      render(currentPage());
+    }
+
+    function render(page) {
+      renderTabs();
+      $("app").innerHTML = (views[page] || views.dashboard)();
+      bindForms();
+      bindFilters();
+      bindDeletes();
+    }
+
+    function pageShell(title, hint, body, actions = "") {
+      return `
+        <div class="section-head">
+          <div><h2>${title}</h2><p class="hint">${hint}</p></div>
+          ${actions ? `<div class="actions">${actions}</div>` : ""}
+        </div>
+        ${body}
+      `;
+    }
+
+    function metric(label, value, note = "") {
+      return `<div class="metric span-3"><div class="label">${label}</div><div class="value">${value}</div><p class="hint">${note}</p></div>`;
+    }
+
+    function table(headers, rows, empty = "Данных пока нет") {
+      return `
+        <div class="table-wrap">
+          <table>
+            <thead><tr>${headers.map((header) => `<th>${header}</th>`).join("")}</tr></thead>
+            <tbody>${rows.length ? rows.join("") : `<tr><td colspan="${headers.length}">${empty}</td></tr>`}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    const views = {
+      dashboard: () => {
+        const activeSubs = state.subscriptions.filter((sub) => String(sub.status) === "ACTIVE");
+        const debtors = state.students.filter((student) => student.status === "DEBTOR");
+        const revenue = state.payments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
+        const frozen = state.subscriptions.filter((sub) => String(sub.status) === "FROZEN");
+        return pageShell("Обзор", "Быстрый срез по клиентской базе, финансам и занятости студии.", `
+          <div class="grid">
+            ${metric("Ученики", state.students.length, `${debtors.length} требуют оплаты`)}
+            ${metric("Активные абонементы", activeSubs.length, `${frozen.length} на заморозке`)}
+            ${metric("Занятий в сетке", state.schedule.length, `${state.halls.length} залов`)}
+            ${metric("Выручка", money(revenue), `${state.payments.length} платежей`)}
+            <div class="panel span-7">
+              <h3>Ближайшая сетка занятий</h3>
+              ${scheduleBoard()}
+            </div>
+            <div class="panel span-5">
+              <h3>Контроль задолженности</h3>
+              ${table(["Ученик", "Телефон", "Статус"], debtors.slice(0, 8).map((student) => `
+                <tr><td>${safe(student.fio)}</td><td>${safe(student.phone)}</td><td>${statusBadge(student.status)}</td></tr>
+              `), "Должников нет")}
+            </div>
+          </div>
+        `);
+      },
+
+      students: () => pageShell("Ученики", "Регистрация клиентов и контроль финансового статуса.", `
+        <div class="grid">
+          <div class="panel span-4">
+            <h3>Новый ученик</h3>
+            <form data-action="student">
+              <label>ФИО<input name="fio" required autocomplete="name"></label>
+              <label>Телефон<input name="phone" autocomplete="tel" placeholder="+7..."></label>
+              <label>Статус<select name="status"><option>ACTIVE</option><option>DEBTOR</option></select></label>
+              <button class="btn primary" type="submit">Добавить ученика</button>
+              <div class="toast"></div>
+            </form>
+          </div>
+          <div class="panel span-8">
+            <div class="filters"><input data-filter="studentsTable" placeholder="Поиск по ФИО или телефону"></div>
+            ${table(["ID", "ФИО", "Телефон", "Статус", ""], state.students.map((student) => `
+              <tr>
+                <td>${student.studentId}</td>
+                <td>${safe(student.fio)}</td>
+                <td>${safe(student.phone)}</td>
+                <td>${statusBadge(student.status)}</td>
+                <td><button class="btn icon danger" data-delete-student="${student.studentId}" title="Удалить ученика" type="button">×</button></td>
+              </tr>
+            `))}
+          </div>
+        </div>
+      `),
+
+      groups: () => pageShell("Группы", "Создание направлений и запись учеников в группы.", `
+        <div class="grid">
+          <div class="panel span-4">
+            <h3>Новая группа</h3>
+            <form data-action="group">
+              <label>Название<input name="name" required placeholder="Sexy Course"></label>
+              <label>Направление<input name="direction" placeholder="High Heels"></label>
+              <label>Уровень<input name="level" placeholder="Base / Pro"></label>
+              <label>Хореограф<select name="choreographerId" required>${optionList(state.choreographers, "choreographerId", (item) => `${item.choreographerId} · ${item.fio}`)}</select></label>
+              <button class="btn primary" type="submit">Создать группу</button>
+              <div class="toast"></div>
+            </form>
+          </div>
+          <div class="panel span-4">
+            <h3>Записать ученика</h3>
+            <form data-action="enroll">
+              <label>Группа<select name="groupId" required>${optionList(state.groups, "groupId", (item) => `${item.groupId} · ${item.name}`)}</select></label>
+              <label>Ученик<select name="studentId" required>${optionList(state.students, "studentId", (item) => `${item.studentId} · ${item.fio}`)}</select></label>
+              <button class="btn primary" type="submit">Записать в группу</button>
+              <div class="toast"></div>
+            </form>
+          </div>
+          <div class="panel span-4">
+            <h3>Сводка</h3>
+            <p class="hint">В базе ${state.groups.length} групп, ${state.choreographers.length} хореографов и ${state.students.length} учеников. Состав групп можно пополнять вручную или через CSV-импорт.</p>
+          </div>
+          <div class="panel span-12">
+            ${table(["ID", "Название", "Направление", "Уровень", "Хореограф"], state.groups.map((group) => `
+              <tr><td>${group.groupId}</td><td><strong>${safe(group.name)}</strong></td><td>${safe(group.direction)}</td><td>${safe(group.level)}</td><td>${choreographerName(group.choreographerId)}</td></tr>
+            `))}
+          </div>
+        </div>
+      `),
+
+      schedule: () => pageShell("Расписание", "Недельная сетка занятий с контролем конфликтов залов и хореографов на уровне БД.", `
+        <div class="grid">
+          <div class="panel span-4">
+            <h3>Новый зал</h3>
+            <form data-action="hall">
+              <label>Название<input name="name" required placeholder="Большой зал"></label>
+              <label>Вместимость<input name="capacity" type="number" min="1" required></label>
+              <button class="btn primary" type="submit">Добавить зал</button>
+              <div class="toast"></div>
+            </form>
+          </div>
+          <div class="panel span-8">
+            <h3>Новое занятие</h3>
+            <form data-action="class">
+              <div class="form-grid">
+                <label>Группа<select name="groupId" required>${optionList(state.groups, "groupId", (item) => `${item.groupId} · ${item.name}`)}</select></label>
+                <label>Зал<select name="hallId" required>${optionList(state.halls, "id", (item) => `${item.id} · ${item.name}`)}</select></label>
+                <label>День недели<select name="dayOfWeek" required>${days.map((day, index) => `<option value="${index + 1}">${index + 1} · ${day}</option>`).join("")}</select></label>
+                <label>Начало<input name="startTime" type="time" required></label>
+                <label>Окончание<input name="endTime" type="time" required></label>
+              </div>
+              <button class="btn primary" type="submit">Добавить в расписание</button>
+              <div class="toast"></div>
+            </form>
+          </div>
+          <div class="panel span-12">
+            <h3>Сетка недели</h3>
+            ${scheduleBoard(true)}
+          </div>
+          <div class="panel span-12">
+            ${table(["ID", "Группа", "Зал", "День", "Время", ""], state.schedule.map((item) => `
+              <tr>
+                <td>${item.scheduleId}</td>
+                <td>${groupName(item.groupId)}</td>
+                <td>${hallName(item.hallId)}</td>
+                <td>${days[item.dayOfWeek - 1] || item.dayOfWeek}</td>
+                <td>${safe(item.startTime)}–${safe(item.endTime)}</td>
+                <td><button class="btn icon danger" data-delete-schedule="${item.scheduleId}" title="Удалить занятие" type="button">×</button></td>
+              </tr>
+            `))}
+          </div>
+        </div>
+      `),
+
+      subscriptions: () => pageShell("Абонементы", "Продажа тарифов, остаток занятий и заморозка по документу.", `
+        <div class="grid">
+          <div class="panel span-4">
+            <h3>Продать абонемент</h3>
+            <form data-action="buy">
+              <label>Ученик<select name="studentId" required>${optionList(state.students, "studentId", (item) => `${item.studentId} · ${item.fio}`)}</select></label>
+              <label>Тариф<select name="typeId" required>${optionList(state.subscriptionTypes, "typeId", (item) => `${item.typeId} · ${item.name} · ${money(item.price)}`)}</select></label>
+              <button class="btn primary" type="submit">Оформить продажу</button>
+              <div class="toast"></div>
+            </form>
+          </div>
+          <div class="panel span-4">
+            <h3>Заморозить</h3>
+            <form data-action="freeze">
+              <label>Абонемент<select name="subId" required>${optionList(state.subscriptions, "subId", (item) => `${item.subId} · ${item.subNumber} · ${studentName(item.studentId)}`)}</select></label>
+              <div class="form-grid">
+                <label>Начало<input name="startDate" type="date" required></label>
+                <label>Окончание<input name="endDate" type="date" required></label>
+              </div>
+              <label>Причина<textarea name="reason" placeholder="Болезнь, справка..."></textarea></label>
+              <label>Документ<input name="file" type="file" required></label>
+              <button class="btn primary" type="submit">Заморозить</button>
+              <div class="toast"></div>
+            </form>
+          </div>
+          <div class="panel span-4">
+            <h3>Тарифы</h3>
+            ${table(["Тариф", "Цена", "Визиты"], state.subscriptionTypes.map((type) => `
+              <tr><td>${safe(type.name)}</td><td>${money(type.price)}</td><td>${safe(type.visitCount)}</td></tr>
+            `))}
+          </div>
+          <div class="panel span-12">
+            ${table(["ID", "Номер", "Ученик", "Тариф", "Куплен", "До", "Статус", "Остаток"], state.subscriptions.map((sub) => `
+              <tr><td>${sub.subId}</td><td>${safe(sub.subNumber)}</td><td>${studentName(sub.studentId)}</td><td>${typeName(sub.typeId)}</td><td>${safe(sub.purchaseDate)}</td><td>${safe(sub.endDate)}</td><td>${statusBadge(sub.status)}</td><td>${safe(sub.visitCount)}</td></tr>
+            `))}
+          </div>
+          <div class="panel span-12">
+            <h3>История заморозок</h3>
+            ${table(["ID", "Абонемент", "Период", "Причина", "Документ"], state.freezes.map((freeze) => `
+              <tr><td>${freeze.freezeId}</td><td>${freeze.clientSubscriptionId}</td><td>${safe(freeze.startDate)}–${safe(freeze.endDate)}</td><td>${safe(freeze.reason)}</td><td>${safe(freeze.documentUrl)}</td></tr>
+            `))}
+          </div>
+        </div>
+      `),
+
+      attendance: () => pageShell("Посещения", "Отметка присутствия автоматически проверяет абонемент и списывает занятие.", `
+        <div class="grid">
+          <div class="panel span-5">
+            <h3>Отметить ученика</h3>
+            <form data-action="attendance">
+              <label>Абонемент<select name="subId" required>${optionList(state.subscriptions, "subId", (item) => `${item.subId} · ${studentName(item.studentId)} · ${item.subNumber} · ${item.status}`)}</select></label>
+              <label>Занятие<select name="scheduleId" required>${optionList(state.schedule, "scheduleId", (item) => `${item.scheduleId} · ${days[item.dayOfWeek - 1]} · ${item.startTime} · ${groupName(item.groupId)}`)}</select></label>
+              <button class="btn primary" type="submit">Отметить посещение</button>
+              <div class="toast"></div>
+            </form>
+          </div>
+          <div class="panel span-7">
+            ${table(["ID", "Абонемент", "Занятие", "Дата", "Доп.", "Разовое"], state.attendance.map((visit) => `
+              <tr><td>${visit.visitId}</td><td>${visit.subId}</td><td>${attendanceLessonName(visit.scheduleId)}</td><td>${safe(visit.visitDate)}</td><td>${visit.isExtra ? "Да" : "Нет"}</td><td>${visit.isSingle ? "Да" : "Нет"}</td></tr>
+            `))}
+          </div>
+        </div>
+      `),
+
+      staff: () => pageShell("Хореографы", "Преподаватели, которых можно назначать ведущими групп.", `
+        <div class="grid">
+          <div class="panel span-4">
+            <h3>Новый хореограф</h3>
+            <form data-action="choreographer">
+              <label>ФИО<input name="fio" required autocomplete="name"></label>
+              <button class="btn primary" type="submit">Добавить</button>
+              <div class="toast"></div>
+            </form>
+          </div>
+          <div class="panel span-8">
+            ${table(["ID", "ФИО", "Групп ведет"], state.choreographers.map((item) => `
+              <tr><td>${item.choreographerId}</td><td>${safe(item.fio)}</td><td>${state.groups.filter((group) => group.choreographerId === item.choreographerId).length}</td></tr>
+            `))}
+          </div>
+        </div>
+      `),
+
+      payments: () => {
+        const revenue = state.payments.reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
+        const visitsToday = state.attendance.filter((visit) => visit.visitDate === new Date().toISOString().slice(0, 10)).length;
+        return pageShell("Отчеты", "Финансовые операции, фискальные признаки и посещаемость.", `
+          <div class="grid">
+            ${metric("Выручка", money(revenue), "По всем платежам")}
+            ${metric("Платежи", state.payments.length, "Записей в кассе")}
+            ${metric("Посещения сегодня", visitsToday, "Отметки за текущую дату")}
+            ${metric("Заморозки", state.freezes.length, "Документированные периоды")}
+            <div class="panel span-12">
+              ${table(["ID", "Сумма", "Время", "Фискальный признак", "Админ", "Абонемент", "Статус"], state.payments.map((payment) => `
+                <tr><td>${payment.paymentId}</td><td>${money(payment.amount)}</td><td>${safe(payment.paymentTime)}</td><td>${safe(payment.fiscalSign)}</td><td>${safe(payment.adminId)}</td><td>${safe(payment.subId)}</td><td>${statusBadge(payment.status)}</td></tr>
+              `))}
+            </div>
+          </div>
+        `);
+      },
+
+      imports: () => pageShell("Импорт CSV", "Пакетное добавление учеников в выбранную группу.", `
+        <div class="grid">
+          <div class="panel span-5">
+            <h3>Загрузить список</h3>
+            <form data-action="import">
+              <label>Группа<select name="groupId" required>${optionList(state.groups, "groupId", (item) => `${item.groupId} · ${item.name}`)}</select></label>
+              <label>CSV-файл<input name="file" type="file" accept=".csv,text/csv" required></label>
+              <button class="btn primary" type="submit">Импортировать</button>
+              <div class="toast"></div>
+            </form>
+          </div>
+          <div class="panel span-7">
+            <h3>Формат</h3>
+            <p class="hint">Файл обрабатывается серверным импортом: строки валидируются, ученики создаются и сразу привязываются к группе.</p>
+          </div>
+        </div>
+      `)
+    };
+
+    function scheduleBoard(withDelete = false) {
+      const lessonsByDay = days.map((_, index) => state.schedule.filter((item) => item.dayOfWeek === index + 1));
+      return `<div class="schedule-board">${lessonsByDay.map((items, index) => `
+        <div class="day">
+          <div class="day-title">${days[index]}</div>
+          ${items.length ? items.map((item) => `
+            <div class="lesson">
+              <strong>${safe(item.startTime)}–${safe(item.endTime)}</strong>
+              <span>${groupName(item.groupId)}</span>
+              <small>${hallName(item.hallId)}</small>
+              ${withDelete ? `<button class="btn danger" data-delete-schedule="${item.scheduleId}" type="button">Удалить</button>` : ""}
+            </div>
+          `).join("") : `<p class="hint" style="padding:10px;margin:0">Нет занятий</p>`}
+        </div>
+      `).join("")}</div>`;
+    }
+
+    function bindFilters() {
+      document.querySelectorAll("[data-filter]").forEach((input) => {
+        const tableElement = input.closest(".panel").querySelector("table");
+        input.addEventListener("input", () => {
+          const query = input.value.trim().toLowerCase();
+          tableElement.querySelectorAll("tbody tr").forEach((row) => {
+            row.hidden = query && !row.textContent.toLowerCase().includes(query);
+          });
+        });
+      });
+    }
+
+    function bindDeletes() {
+      document.querySelectorAll("[data-delete-schedule]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          if (!confirm("Удалить занятие из расписания?")) return;
+          try {
+            await request(`/schedule/${button.dataset.deleteSchedule}`, { method: "DELETE" });
+            await loadAll();
+          } catch (error) {
+            alert(error.message);
+          }
+        });
+      });
+      document.querySelectorAll("[data-delete-student]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          if (!confirm("Удалить ученика? Если у него есть действующий абонемент, система отменит удаление.")) return;
+          try {
+            const message = await request(`/students/${button.dataset.deleteStudent}`, { method: "DELETE" });
+            alert(message);
+            await loadAll();
+          } catch (error) {
+            alert(error.message);
+          }
+        });
+      });
+    }
+
+    function bindForms() {
+      document.querySelectorAll("form[data-action]").forEach((form) => {
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const toast = form.querySelector(".toast");
+          toast.className = "toast";
+          toast.textContent = "Выполняется...";
+          try {
+            const action = form.dataset.action;
+            let result = "";
+            if (action === "student") result = await request("/students", json({ fio: formValue(form, "fio"), phone: formValue(form, "phone") || null, status: formValue(form, "status") }));
+            if (action === "choreographer") result = await request("/choreographers", json({ fio: formValue(form, "fio") }));
+            if (action === "group") result = await request("/groups", json({ name: formValue(form, "name"), direction: formValue(form, "direction"), level: formValue(form, "level"), choreographerId: Number(formValue(form, "choreographerId")) }));
+            if (action === "enroll") result = await request(`/groups/${formValue(form, "groupId")}/enroll/${formValue(form, "studentId")}`, { method: "POST" });
+            if (action === "hall") result = await request("/hall/new", json({ name: formValue(form, "name"), capacity: Number(formValue(form, "capacity")) }));
+            if (action === "class") result = await request("/schedule/new-class", json({ groupId: Number(formValue(form, "groupId")), hallId: Number(formValue(form, "hallId")), dayOfWeek: Number(formValue(form, "dayOfWeek")), startTime: formValue(form, "startTime"), endTime: formValue(form, "endTime") }));
+            if (action === "buy") result = await request(`/students/${formValue(form, "studentId")}/buy-sub?typeId=${formValue(form, "typeId")}`, { method: "POST" });
+            if (action === "attendance") result = await request(`/attendance/mark?subId=${formValue(form, "subId")}&scheduleId=${formValue(form, "scheduleId")}`, { method: "POST" });
+            if (action === "freeze") result = await freezeSubscription(form);
+            if (action === "import") result = await uploadCsv(form);
+            toast.className = "toast ok";
+            toast.textContent = result || "Готово";
+            form.reset();
+            await loadAll();
+          } catch (error) {
+            toast.className = "toast err";
+            toast.textContent = error.message;
+          }
+        });
+      });
+    }
+
+    function json(body) {
+      return { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+    }
+
+    async function freezeSubscription(form) {
+      const data = new FormData();
+      data.append("data", new Blob([JSON.stringify({
+        startDate: formValue(form, "startDate"),
+        endDate: formValue(form, "endDate"),
+        reason: formValue(form, "reason")
+      })], { type: "application/json" }));
+      data.append("file", form.elements.file.files[0]);
+      return request(`/subscription/${formValue(form, "subId")}/freeze`, { method: "POST", body: data });
+    }
+
+    async function uploadCsv(form) {
+      const data = new FormData();
+      data.append("file", form.elements.file.files[0]);
+      return request(`/groups/${formValue(form, "groupId")}/import-csv`, { method: "POST", body: data });
+    }
+
+    window.addEventListener("hashchange", () => render(currentPage()));
+    $("refreshBtn").addEventListener("click", loadAll);
+    loadAll();
+  </script>
+</body>
+</html>

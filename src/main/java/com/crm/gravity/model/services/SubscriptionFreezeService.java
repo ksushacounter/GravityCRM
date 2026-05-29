@@ -10,9 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-
 @Service
 @Transactional
 public class SubscriptionFreezeService {
@@ -28,11 +25,12 @@ public class SubscriptionFreezeService {
         if (subscription == null) {
             throw new EntityNotFoundException("Абонемент не найден с ID: " + subscriptionId);
         }
-
-        long freezeDays = ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate()) + 1;
-
-        LocalDate newEndDate = subscription.endDate().plusDays(freezeDays);
-        subscriptionRepository.updateEndDate(subscriptionId, newEndDate);
+        if (request.getStartDate() == null || request.getEndDate() == null) {
+            throw new IllegalArgumentException("Укажите даты начала и окончания заморозки");
+        }
+        if (request.getStartDate().isAfter(request.getEndDate())) {
+            throw new IllegalArgumentException("Дата начала заморозки не может быть позже даты окончания");
+        }
 
         SubscriptionFreeze freeze = new SubscriptionFreeze(
                 null,
@@ -47,3 +45,4 @@ public class SubscriptionFreezeService {
         freezeRepository.save(freeze);
     }
 }
+
